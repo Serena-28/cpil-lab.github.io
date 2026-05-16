@@ -54,26 +54,33 @@ Decap CMS is configured in `public/admin/config.yml`.
 
 Before launch:
 
-1. Confirm the CMS backend points to `dun-yuan/CPIL-webpage`.
+1. Confirm the CMS backend points to `cpil-lab/cpil-lab.github.io`.
 2. Replace placeholder contact details.
-3. Configure GitHub OAuth for Decap CMS. Netlify can provide this auth flow; GitHub Pages or Cloudflare Pages may need a separate OAuth proxy.
+3. Configure GitHub OAuth for Decap CMS if `/admin` will be used. GitHub Pages is static, so CMS login needs an external OAuth proxy, Netlify authentication provider, or a Cloudflare Pages deployment for the auth endpoints.
 4. Keep `publish_mode: editorial_workflow` enabled.
 
 The CMS stores uploads under `public/images/uploads` and writes content changes to Markdown files in `src/content`.
 
 Open authoring is enabled, so GitHub users without direct write access can submit CMS changes through fork-backed pull requests. Maintainers should still review every CMS-created PR before merging.
 
-### Cloudflare Pages CMS Login
+### Decap CMS Login
 
-This repo includes Cloudflare Pages Functions for Decap CMS GitHub OAuth:
+The CMS config in `public/admin/config.yml` is set to write to:
+
+- Repository: `cpil-lab/cpil-lab.github.io`
+- Public site: `https://cpil-lab.github.io`
+
+GitHub Pages can serve the `/admin` UI, but it cannot run server-side OAuth routes. To enable CMS login on GitHub Pages, deploy a Decap CMS GitHub OAuth proxy and set `base_url` and `auth_endpoint` in `public/admin/config.yml`.
+
+This repo also includes Cloudflare Pages Functions that can be used for Decap CMS GitHub OAuth if the site, or just the OAuth proxy, is deployed on Cloudflare Pages:
 
 - `functions/api/auth.js`
 - `functions/api/callback.js`
 
 Create a GitHub OAuth App:
 
-- Homepage URL: `https://cpil-webpage.pages.dev`
-- Authorization callback URL: `https://cpil-webpage.pages.dev/api/callback`
+- Homepage URL: `https://cpil-lab.github.io`
+- Authorization callback URL: `https://<your-cloudflare-pages-domain>/api/callback`
 
 Then add these Cloudflare Pages environment variables:
 
@@ -103,11 +110,25 @@ This keeps CMS-created changes in review instead of publishing directly to produ
 
 The included workflow `.github/workflows/deploy.yml` installs dependencies, runs `npm run build`, uploads `dist`, and deploys to GitHub Pages.
 
+This repository is an organization page repository at `cpil-lab/cpil-lab.github.io`, so the workflow automatically sets:
+
+```bash
+SITE=https://cpil-lab.github.io
+BASE_PATH=/
+```
+
 For a project page, the workflow sets:
 
 ```bash
 SITE=https://<owner>.github.io
 BASE_PATH=/<repo>
+```
+
+For an owner or organization page repository named `<owner>.github.io`, the workflow automatically sets:
+
+```bash
+SITE=https://<owner>.github.io
+BASE_PATH=/
 ```
 
 For a custom domain, set repository or workflow environment variables:

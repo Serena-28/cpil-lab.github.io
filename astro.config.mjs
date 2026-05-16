@@ -2,7 +2,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-const site = process.env.SITE ?? 'https://cpil-webpage.pages.dev';
+const site = process.env.SITE ?? 'https://cpil-lab.github.io';
 const base = process.env.BASE_PATH ?? '/';
 
 export default defineConfig({
