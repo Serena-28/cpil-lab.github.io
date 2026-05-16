@@ -15,10 +15,11 @@ const maxBioChars = 190;
 const isLongBio = bioText.length > maxBioChars;
 const bioPreview = isLongBio ? `${bioText.slice(0, maxBioChars).replace(/\s+\S*$/, '')}...` : bioText;
 const visibleInterests = interests.slice(0, 4);
+const hiddenInterests = interests.slice(4);
 const hiddenInterestCount = interests.length - visibleInterests.length;
 ---
 
-<article class="card grid h-full grid-rows-[auto_1fr] overflow-hidden">
+<article class="card grid h-full scroll-mt-20 grid-rows-[auto_1fr] overflow-hidden">
   <img
     src={withBase(photo)}
     alt={`Photo or profile placeholder for ${name}`}
@@ -45,7 +46,11 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
             </summary>
             <div class="hidden group-open:block">
               <p>{bioText}</p>
-              <button type="button" class="mt-2 font-semibold text-[rgb(var(--accent-strong))]" data-close-details>
+              <button
+                type="button"
+                class="mt-2 cursor-pointer font-semibold text-[rgb(var(--accent-strong))] underline-offset-4 hover:underline focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(var(--accent-strong))]"
+                data-close-details
+              >
                 show less
               </button>
             </div>
@@ -63,9 +68,28 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
               {interest}
             </li>
           ))}
-          {hiddenInterestCount > 0 && (
-            <li class="rounded-md border border-[rgba(var(--line),0.95)] px-2 py-0.5 text-[0.7rem] font-semibold text-[rgb(var(--muted))]">
-              +{hiddenInterestCount} more
+          {hiddenInterests.length > 0 && (
+            <li class="contents" data-interest-list>
+              <button
+                type="button"
+                class="cursor-pointer rounded-md border border-[rgba(var(--line),0.95)] px-2 py-0.5 text-[0.7rem] font-semibold text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent-strong))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(var(--accent-strong))]"
+                aria-expanded="false"
+                data-interest-expand
+              >
+                +{hiddenInterestCount} more
+              </button>
+              {hiddenInterests.map((interest) => (
+                <span class="hidden rounded-md bg-[rgba(var(--accent),0.1)] px-2 py-0.5 text-[0.7rem] font-semibold text-[rgb(var(--accent-strong))]" data-hidden-interest>
+                  {interest}
+                </span>
+              ))}
+              <button
+                type="button"
+                class="hidden cursor-pointer rounded-md border border-[rgba(var(--line),0.95)] px-2 py-0.5 text-[0.7rem] font-semibold text-[rgb(var(--muted))] hover:border-[rgb(var(--accent))] hover:text-[rgb(var(--accent-strong))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(var(--accent-strong))]"
+                data-interest-collapse
+              >
+                show less
+              </button>
             </li>
           )}
         </ul>
@@ -99,14 +123,55 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
 </style>
 
 <script>
+  const scrollCardIntoView = (source: HTMLElement) => {
+    const card = source.closest('article');
+    if (!(card instanceof HTMLElement)) return;
+
+    window.requestAnimationFrame(() => {
+      card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  };
+
   document.addEventListener('click', (event) => {
     const target = event.target;
     if (!(target instanceof HTMLElement)) return;
 
     const closeButton = target.closest('[data-close-details]');
-    if (!(closeButton instanceof HTMLElement)) return;
+    if (closeButton instanceof HTMLElement) {
+      const details = closeButton.closest('details');
+      if (details) details.open = false;
+      scrollCardIntoView(closeButton);
+      return;
+    }
 
-    const details = closeButton.closest('details');
-    if (details) details.open = false;
+    const expandButton = target.closest('[data-interest-expand]');
+    if (expandButton instanceof HTMLButtonElement) {
+      const list = expandButton.closest('[data-interest-list]');
+      if (!(list instanceof HTMLElement)) return;
+
+      expandButton.classList.add('hidden');
+      expandButton.setAttribute('aria-expanded', 'true');
+      list.querySelectorAll('[data-hidden-interest], [data-interest-collapse]').forEach((item) => {
+        item.classList.remove('hidden');
+      });
+      return;
+    }
+
+    const collapseButton = target.closest('[data-interest-collapse]');
+    if (collapseButton instanceof HTMLButtonElement) {
+      const list = collapseButton.closest('[data-interest-list]');
+      if (!(list instanceof HTMLElement)) return;
+
+      collapseButton.classList.add('hidden');
+      list.querySelectorAll('[data-hidden-interest]').forEach((item) => {
+        item.classList.add('hidden');
+      });
+      const listExpandButton = list.querySelector('[data-interest-expand]');
+      if (listExpandButton instanceof HTMLButtonElement) {
+        listExpandButton.classList.remove('hidden');
+        listExpandButton.setAttribute('aria-expanded', 'false');
+      }
+      scrollCardIntoView(collapseButton);
+    }
   });
 </script>
