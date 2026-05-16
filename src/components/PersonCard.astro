@@ -18,7 +18,7 @@ const visibleInterests = interests.slice(0, 4);
 const hiddenInterestCount = interests.length - visibleInterests.length;
 ---
 
-<article class="card grid h-full overflow-hidden">
+<article class="card grid h-full grid-rows-[auto_1fr] overflow-hidden">
   <img
     src={withBase(photo)}
     alt={`Photo or profile placeholder for ${name}`}
@@ -27,7 +27,7 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
     loading="lazy"
     decoding="async"
   />
-  <div class="grid content-start gap-3 p-4">
+  <div class="flex h-full flex-col gap-3 p-4">
     <div>
       <h3 class="text-lg font-bold leading-tight text-[rgb(var(--ink))]">{name}</h3>
       <p class="mt-1 text-xs font-bold uppercase tracking-[0.08em] text-[rgb(var(--accent-strong))]">{displayRole}</p>
@@ -37,14 +37,18 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
       {
         isLongBio ? (
           <details class="group">
-            <summary class="block cursor-pointer list-none">
-              <span class="group-open:hidden">
+            <summary class="block cursor-pointer list-none group-open:hidden">
+              <span>
                 {bioPreview}{' '}
                 <span class="font-semibold text-[rgb(var(--accent-strong))]">read more</span>
               </span>
-              <span class="hidden font-semibold text-[rgb(var(--accent-strong))] group-open:inline">Show less</span>
             </summary>
-            <p class="mt-2">{bioText}</p>
+            <div class="hidden group-open:block">
+              <p>{bioText}</p>
+              <button type="button" class="mt-2 font-semibold text-[rgb(var(--accent-strong))]" data-close-details>
+                show less
+              </button>
+            </div>
           </details>
         ) : (
           <p>{bioText}</p>
@@ -67,7 +71,7 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
         </ul>
       )
     }
-    <div class="flex flex-wrap gap-3 text-sm">
+    <div class="mt-auto flex flex-wrap gap-3 pt-1 text-sm">
       {
         email && (
           <a href={`mailto:${email}`} class="inline-flex items-center gap-1.5 font-semibold text-[rgb(var(--accent-strong))]">
@@ -93,3 +97,16 @@ const hiddenInterestCount = interests.length - visibleInterests.length;
     display: none;
   }
 </style>
+
+<script>
+  document.addEventListener('click', (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+
+    const closeButton = target.closest('[data-close-details]');
+    if (!(closeButton instanceof HTMLElement)) return;
+
+    const details = closeButton.closest('details');
+    if (details) details.open = false;
+  });
+</script>
