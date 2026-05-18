@@ -2,7 +2,7 @@
 name: Anuar Aimoldin
 role: PhD Students
 affiliation: MBZUAI
-photo: /images/uploads/1763657302439.jpeg
+photo: https://media.licdn.com/dms/image/v2/D4D03AQEhbiUEtuBrgg/profile-displayphoto-crop_800_800/B4DZqiKr0hIgAI-/0/1763657302439?e=1780531200&v=beta&t=k9v4HCaKsPJZUMBkO-Ds4coJ7KncUMab30dtYNtd1Bo
 email: anuar.aimoldin@mbzuai.ac.ae
 website: anuar.dsml.kz
 interests:
