@@ -48,7 +48,17 @@ collections:
           - "Interns"
           - "Alumni"
       - { label: "Affiliation", name: "affiliation", widget: "string" }
-      - { label: "Photo", name: "photo", widget: "image", required: false, hint: "Use a square or landscape image. Uploaded files are stored under public/images/uploads." }
+      - label: "Photo"
+        name: "photo"
+        widget: "image"
+        required: false
+        choose_url: false
+        media_folder: "/public/images/people"
+        public_folder: "/images/people"
+        media_library:
+          config:
+            max_file_size: 2097152
+        hint: "Upload a square headshot when possible. The CMS stores people photos under public/images/people and writes /images/people/<filename> into this field."
       - { label: "Email", name: "email", widget: "string", required: false }
       - { label: "Website", name: "website", widget: "string", required: false }
       - label: "Research Interests"

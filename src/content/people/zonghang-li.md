@@ -2,7 +2,7 @@
 name: Zonghang Li
 role: Postdocs
 affiliation: MBZUAI
-photo: ""
+photo: /images/people/zonghang-li.jpeg
 email: zonghang.li@mbzuai.ac.ae
 website: https://scholar.google.com/citations?user=1IA-XokAAAAJ&hl=en
 interests:

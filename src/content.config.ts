@@ -19,6 +19,12 @@ const urlLike = z
 
 const optionalUrl = urlLike.or(z.literal('')).optional();
 const optionalEmail = z.string().email().or(z.literal('')).optional();
+const pathWithFallback = (fallback: string) =>
+  z
+    .string()
+    .trim()
+    .transform((value) => value || fallback)
+    .default(fallback);
 
 const role = z.enum([
   'Principal Investigator',
@@ -39,7 +45,7 @@ const people = defineCollection({
     name: z.string(),
     role,
     affiliation: z.string(),
-    photo: z.string().default('/images/people/placeholder.png'),
+    photo: pathWithFallback('/images/people/placeholder.png'),
     email: optionalEmail,
     website: optionalUrl,
     interests: z.array(z.string()).default([]),
@@ -56,7 +62,7 @@ const projects = defineCollection({
     longDescription: z.string(),
     members: z.array(z.string()).default([]),
     tags: z.array(z.string()).default([]),
-    image: z.string().default('/images/projects/placeholder.png'),
+    image: pathWithFallback('/images/projects/placeholder.png'),
     links: z
       .array(
         z.object({
